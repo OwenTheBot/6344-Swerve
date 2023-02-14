@@ -21,12 +21,9 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.*;
-
-import java.util.function.DoubleSupplier;
 
 public class DrivetrainSubsystem extends SubsystemBase {
         /**
@@ -36,6 +33,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
          * useful during initial testing of the robot.
          */
         public static final double MAX_VOLTAGE = 12.0;
+        public static double speed = 0.5;
         // The formula for calculating the theoretical maximum velocity is:
         // <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> *
         // pi
@@ -51,10 +49,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
          * line.
          */
         public static final double MAX_VELOCITY_METERS_PER_SECOND = 6380.0 / 60.0 *
-                        SdsModuleConfigurations.MK4I_L1.getDriveReduction() *
+                        SdsModuleConfigurations.MK4_L1.getDriveReduction() *
                         SdsModuleConfigurations.MK4_L1.getWheelDiameter() * Math.PI;
         public static final double MAX_VELOCITY_METERS_PER_SECOND_TRAJECTORY = 6380.0 / 60.0 * 
-                        SdsModuleConfigurations.MK4I_L1.getDriveReduction() * 
+                        SdsModuleConfigurations.MK4_L1.getDriveReduction() * 
                         SdsModuleConfigurations.MK4_L1.getWheelDiameter() * Math.PI;
 
         public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 3.0;
@@ -84,10 +82,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // the robot counter-clockwise should
         // cause the angle reading to increase until it wraps back over to zero.
 
-        private final Pigeon2 m_pigeon = new Pigeon2(DRIVETRAIN_PIGEON_ID);
-        Double m_pigeonPitch;
-        Double m_pigeonYaw;
-        Double m_pigeonRoll;
+        public final Pigeon2 m_pigeon = new Pigeon2(DRIVETRAIN_PIGEON_ID);
+        public static Double m_pigeonPitch;
+        public static Double m_pigeonYaw;
+        public static Double m_pigeonRoll;
 
         // These are our modules. We initialize them in the constructor.
         private final SwerveModule m_frontLeftModule;
@@ -204,6 +202,22 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 this.states = states;
         }
 
+        public void setYaw(double yaw) {
+                m_pigeon.setYaw(yaw);
+        }
+
+        public static double getPitch() {
+                return m_pigeonPitch;
+        }
+
+        public static double getYaw() {
+                return m_pigeonYaw;
+        }
+
+        public static double getRoll() {
+                return m_pigeonRoll;
+        }
+
         @Override
         public void periodic() {
                 m_pigeonPitch = m_pigeon.getPitch();
@@ -224,16 +238,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
 
                 m_frontLeftModule.set(
-                                states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE * 0.5,
+                                states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE * 
+                                speed,
                                 states[0].angle.getRadians());
                 m_frontRightModule.set(
-                                states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE * 0.5,
+                                states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE * speed,
                                 states[1].angle.getRadians());
                 m_backLeftModule.set(
-                                states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE * 0.5,
+                                states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE * speed,
                                 states[2].angle.getRadians());
                 m_backRightModule.set(
-                                states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE * 0.5,
+                                states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE * speed,
                                 states[3].angle.getRadians());
 
 

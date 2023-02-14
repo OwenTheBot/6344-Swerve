@@ -60,9 +60,17 @@ public final class Constants {
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 60;
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(343.7);
 
-    public static final double kPXController = 1.5;
-    public static final double kPYController = 1.5;
+    public static final double kPXController = 1.35;
+    public static final double kPYController = 1.75;
     public static final double kPThetaConroller = 3;
+    public static final double kPSelfRight = 1.775;
+    public static final double kPLimelite = 1.775;
+    public static final double kPArm = 0.001;
+    public static final double kPArmAuton = 0.9;
+    public static final double kIArmAuto = 0.0002;
+
+    public static final double slowSpeed = 0.5;
+    public static final double fastSpeed = 0.85;
 
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
     public static final double kMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 10;
