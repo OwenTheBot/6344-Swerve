@@ -53,21 +53,23 @@ public final class Constants {
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 19;
     public static final int BACK_LEFT_MODULE_STEER_MOTOR = 18;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER = 34;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(203.4);
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(204.1);
 
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 1;
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 0;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 60;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(343.7);
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(341.1);
 
     public static final double kPXController = 1.35;
     public static final double kPYController = 1.75;
     public static final double kPThetaConroller = 3;
     public static final double kPSelfRight = 1.775;
     public static final double kPLimelite = 1.775;
-    public static final double kPArm = 0.001;
+    public static final double kPArm = 0.001; 
+    public static final double kIArm = 0.0025;
     public static final double kPArmAuton = 0.9;
     public static final double kIArmAuto = 0.0002;
+
 
     public static final double slowSpeed = 0.5;
     public static final double fastSpeed = 0.85;

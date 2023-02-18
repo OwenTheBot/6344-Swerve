@@ -20,12 +20,14 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.alignVisonPID;
 import frc.robot.commands.armCommad;
 import frc.robot.commands.armSetPosition;
 import frc.robot.commands.changeSpeed;
@@ -44,6 +46,8 @@ public class RobotContainer {
   private final XboxController drivController = new XboxController(0);
   private final XboxController armController = new XboxController(1);
   private final JoystickButton zeroGyro = new JoystickButton(drivController, XboxController.Button.kStart.value);
+
+
 
 
   public RobotContainer() {
@@ -85,6 +89,7 @@ public class RobotContainer {
     new JoystickButton(armController, XboxController.Button.kY.value).whileTrue(new armSetPosition(armSubsystem, 2050));
     new JoystickButton(armController, XboxController.Button.kA.value).whileTrue(new armSetPosition(armSubsystem, 1706));
     new JoystickButton(drivController, XboxController.Button.kX.value).whileTrue(new changeSpeed());
+    //new JoystickButton(drivController, XboxController.Button.kY.value).whileTrue(new alignVisonPID(m_drivetrainSubsystem));
   }
 
   /**
@@ -96,8 +101,6 @@ public class RobotContainer {
     // An ExampleCommand will run in autonomous
     // 1. Create trajectory settings
 
-    m_drivetrainSubsystem.zeroGyroscope();
-
     TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
       DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND_TRAJECTORY * 0.5, 
       DrivetrainSubsystem.MAX_ACCELERATION_METERS_PER_SECOND_SQUARED)
@@ -107,12 +110,21 @@ public class RobotContainer {
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
       new Pose2d(0, 0, new Rotation2d(0)), 
       List.of(
-        new Translation2d(-1, 0),
-        new Translation2d(0, 0.1)
+        new Translation2d(0.6, 0),
+        new Translation2d(0., 0.1)
+        
         // new Translation2d(0, 1)
         ), 
       new Pose2d(0, 0, Rotation2d.fromDegrees(0)), 
       trajectoryConfig);
+
+      Trajectory trajectory2 = TrajectoryGenerator.generateTrajectory(
+        new Pose2d(0, 0, new Rotation2d(0)), 
+        List.of(
+          new Translation2d(-3, 0.1)
+        ), 
+        new Pose2d(0, 0, Rotation2d.fromDegrees(0)), 
+        trajectoryConfig);
 
       // 3. Define PID controllers for tracking trajectory
       PIDController xController = new PIDController(Constants.kPXController, 0, 0);
@@ -132,15 +144,31 @@ public class RobotContainer {
         m_drivetrainSubsystem::drive, 
         m_drivetrainSubsystem);
 
+        SwerveControllerCommand swerveControllerCommand2 = new SwerveControllerCommand(
+          trajectory2, 
+          m_drivetrainSubsystem::getPose, 
+          DrivetrainSubsystem.m_kinematics,
+          xController,
+          yController,
+          thetaController,
+          m_drivetrainSubsystem::drive, 
+          m_drivetrainSubsystem);
+
         // 5. Add some init and wrap-up, and return everything
         return new SequentialCommandGroup(
           //new InstantCommand(() -> pneumaticsSubsystem.openandclose(false)),
-          //new InstantCommand(() -> pneumaticsSubsystem.openandclose(true)),
-          new pneumaticsCommad(pneumaticsSubsystem, false),
-          //new RunCommand(() -> armSubsystem.setMotor(-armSetPosition.autonPID.calculate(ArmSubsystem.getPosition(), 1706))),
-          new armSetPosition(armSubsystem, 2050),
+          //new InstantCommand(() -> m_drivetrainSubsystem.zeroGyroscope()),
+          new InstantCommand(() -> pneumaticsSubsystem.openandclose(false)),
+          //new pneumaticsCommad(pneumaticsSubsystem, true),
+         //new RunCommand (() -> armSubsystem.setMotor(autonPID.calculate(ArmSubsystem.getPosition(), 1706))),
           new InstantCommand(() -> m_drivetrainSubsystem.resetOdometry(trajectory.getInitialPose())),
-          swerveControllerCommand,
+          new armSetPosition(armSubsystem, 1706),
+          new ParallelCommandGroup(
+          swerveControllerCommand
+          ),
+          new InstantCommand(() -> pneumaticsSubsystem.openandclose(true)),
+          new InstantCommand(() -> pneumaticsSubsystem.openandclose(true)),
+          swerveControllerCommand2,
           new InstantCommand(() -> m_drivetrainSubsystem.stopModules()));
   }
 

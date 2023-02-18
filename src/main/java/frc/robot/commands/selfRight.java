@@ -34,8 +34,8 @@ public class selfRight extends CommandBase {
   @Override
   public void execute() {
     m_DriveTrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-      pid.calculate(DrivetrainSubsystem.getPitch(), 0),
       pid.calculate(DrivetrainSubsystem.getRoll(), 0),
+    0,
       0,
       m_DriveTrainSubsystem.getGyroscopeRotation()
        ));

@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.LimelightSubsystem;
 
 public class alignVisonPID extends CommandBase {
   private final DrivetrainSubsystem m_DriveTrainSubsystem;
@@ -35,8 +36,8 @@ public class alignVisonPID extends CommandBase {
   @Override
   public void execute() {
     m_DriveTrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-      pid.calculate(limelite.getXdeviation, 0),
-      pid.calculate(DrivetrainSubsystem.getYdeviation, 0),
+      pid.calculate(limelite.getXdeviation(), 0),
+      pid.calculate(limelite.getYdeviation(), 0),
       0,
       m_DriveTrainSubsystem.getGyroscopeRotation()
        ));
@@ -45,7 +46,11 @@ public class alignVisonPID extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    m_DriveTrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
+      0, 0, 0, m_DriveTrainSubsystem.getGyroscopeRotation()
+    ));
+  }
 
   // Returns true when the command should end.
   @Override
